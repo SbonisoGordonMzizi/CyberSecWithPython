@@ -6,6 +6,8 @@ import cgi
 
 PORT = 8000
 SERVER_IPADDR = "192.168.1.205"
+cwdPath = os.getcwd()
+
 
 class MyGetRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -37,7 +39,7 @@ class MyGetRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         length = int(self.headers["Content-length"])
         postData = self.rfile.read(length)
-        print(postData.decode())
+        print(postData)
 
 def web_server():
     print("Listing on {}:{} \n".format(SERVER_IPADDR, PORT))
